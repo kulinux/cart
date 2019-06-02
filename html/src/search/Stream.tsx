@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Stream } from 'xstream';
 
-const useStream = <T>(stream$: Stream<T>, initialState: T | null = null) => {
+const useStream = <T, T2>(stream$: Stream<T>, initialState: T) => {
     const [current, setCurrent] = useState<T>(initialState);
 
     useEffect(() => {

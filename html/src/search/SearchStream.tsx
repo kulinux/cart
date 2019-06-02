@@ -15,12 +15,23 @@ import IconButton from '@material-ui/core/IconButton';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import Stream from './Stream';
+import xs from 'xstream'
 
 
+type SearchResultItem = {
+  id: string;
+  name: string;
+}
+type SearchState = {
+  searchText: string;
+  searchResult: Array<SearchResultItem>;
+}
 
-class Search extends React.Component {
 
-  constructor(props) {
+class Search extends React.Component<{}, SearchState> {
+
+  constructor(props: SearchState) {
     super(props);
     this.state = {
       searchText: '',
@@ -32,7 +43,7 @@ class Search extends React.Component {
     };
   }
 
-  handleSearch(event) {
+  handleSearch(event: any) {
     console.log('SEARCH!!!' + event.target.value);
     this.setState({searchText: event.target.value})
   }
