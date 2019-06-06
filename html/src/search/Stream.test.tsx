@@ -4,6 +4,8 @@ import Stream from './Stream';
 import xs from 'xstream'
 
 
+//https://github.com/staltz/xstream
+
 it('Stream', (done: any) => {
   /*
   const div = document.createElement('div');

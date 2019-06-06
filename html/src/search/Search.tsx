@@ -1,5 +1,5 @@
 
-import React from 'react';
+import * as React from 'react';
 
 import TextField from '@material-ui/core/TextField';
 
@@ -16,28 +16,49 @@ import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 
-type SearchResultItem = {
+interface SearchResultItem {
   id: string;
   name: string;
 }
-type SearchState = {
+interface SearchState {
   searchText: string;
   searchResult: Array<SearchResultItem>;
 }
+
+
+const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={props.id}>
+    <ListItemAvatar>
+      <Avatar>
+        <FolderIcon />
+      </Avatar>
+    </ListItemAvatar>
+    <ListItemText
+      primary={props.name}
+      secondary={'Secondary text'}
+    />
+    <ListItemSecondaryAction>
+      <IconButton edge="end" aria-label="Delete">
+        <DeleteIcon />
+      </IconButton>
+    </ListItemSecondaryAction>
+  </ListItem>;
+
+const jsonInit = {
+  searchText: '',
+  searchResult: [
+    { id: '1', name: 'Calamares Roamana' },
+    { id: '2', name: 'Micolor' },
+    { id: '3', name: 'Papel Bater' },
+  ]
+};
+
 
 
 class Search extends React.Component<{}, SearchState> {
 
   constructor(props: SearchState) {
     super(props);
-    this.state = {
-      searchText: '',
-      searchResult: [
-        { id: '1', name: 'Calamares Roamana' },
-        { id: '2', name: 'Micolor' },
-        { id: '3', name: 'Papel Bater' },
-      ]
-    };
+    this.state = jsonInit;
   }
 
   handleSearch(event: any) {
@@ -59,22 +80,7 @@ class Search extends React.Component<{}, SearchState> {
           />
           <List>
             {this.state.searchResult.map((item, i) =>
-                <ListItem key={item.id}>
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FolderIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={item.name}
-                    secondary={'Secondary text'}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="Delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
+              <ListItemView id="id" name="name"/>
             )}
             </List>
       </Container>
