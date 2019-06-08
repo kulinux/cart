@@ -6,12 +6,8 @@ import xs from 'xstream'
 
 //https://github.com/staltz/xstream
 
+
 it('Stream', (done: any) => {
-  /*
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
-  */
   console.log("Test is working!!!");
 
   var stream = xs.periodic(100)
@@ -27,8 +23,4 @@ it('Stream', (done: any) => {
       done();
     }
   });
-
-
-
-
 });
