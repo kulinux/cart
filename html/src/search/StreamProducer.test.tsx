@@ -2,6 +2,9 @@
 import xs, { Listener } from 'xstream'
 
 
+
+//Probar socket.io
+
 it('Stream Producer', (done: any) => {
 
     var producer = {
