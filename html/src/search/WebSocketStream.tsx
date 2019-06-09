@@ -11,6 +11,10 @@ export class WebSocketStream {
         this.connection = new WebSocket(url);
     }
 
+    send(msg: object) {
+        this.connection.send(JSON.stringify(msg));
+    }
+
     openStream(): Stream<SearchResultItem> {
         let con = this.connection;
         let producer: Producer<SearchResultItem> = {
@@ -27,5 +31,17 @@ export class WebSocketStream {
 
         return xs.create(producer);
         
+    }
+
+    buildListener(cb: (sr: SearchResultItem) => void): Listener<SearchResultItem> {
+        var  listener : Listener<SearchResultItem> = 
+        {
+            next: (sr: SearchResultItem) => console.log('next ', sr.id),
+            error: (err: any) => console.error(err),
+            complete: () => {
+                console.log('completed');
+            }
+        }
+        return listener;
     }
 }

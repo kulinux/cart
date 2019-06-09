@@ -17,20 +17,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import {SearchResult} from './Model'
 import {SearchResultItem} from './Model'
-
-
-/*
-export interface SearchResultItem {
-  id: string;
-  name: string;
-}
-
-export interface SearchResult {
-  searchText: string;
-  searchResult: Array<SearchResultItem>;
-}
-*/
-
+import {WebSocketStream} from './WebSocketStream'
+import { Listener } from 'xstream';
 
 
 const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={props.id}>
@@ -63,15 +51,27 @@ const jsonInit = {
 
 class Search extends React.Component<{}, SearchResult> {
 
+  ws: WebSocketStream;
+
   constructor(props: any) {
     super(props);
     this.state = jsonInit;
+    this.ws = new WebSocketStream("ws://localhost:8080/cart")
   }
 
-  connect() {
+  componentDidMount() {
+    this.ws.openStream()
+
+    this.ws.buildListener((sr: SearchResultItem) => {
+      console.log('New Message from server ', sr);
+      let nextState: SearchResult = {
+        searchText: this.state.searchText,
+        searchResult: [...this.state.searchResult, sr]
+      }
+      this.setState(nextState);
+    });
 
   }
-
 
   handleSearch(event: any) {
     console.log('SEARCH!!!' + event.target.value);
