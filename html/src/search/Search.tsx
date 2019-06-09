@@ -18,7 +18,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import {SearchResult} from './Model'
 import {SearchResultItem} from './Model'
 import {WebSocketStream} from './WebSocketStream'
-import { Listener } from 'xstream';
 
 
 const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={props.id}>
@@ -92,7 +91,7 @@ class Search extends React.Component<{}, SearchResult> {
           />
           <List>
             {this.state.searchResult.map((item, i) =>
-              <ListItemView id="id" name="name"/>
+              <ListItemView key="{item.id}" {...item}/>
             )}
             </List>
       </Container>
