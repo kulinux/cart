@@ -10,6 +10,15 @@ export interface SearchResult {
     searchResult: Array<SearchResultItem>;
 }
 
+export interface InputSearch{
+    text: string
+}
+
+export interface SearchResultItemCommand {
+    command: string;
+    sri: SearchResultItem;
+}
+
 
 
 //export default SearchResult;

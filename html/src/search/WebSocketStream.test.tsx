@@ -1,7 +1,7 @@
 import xs, { Listener } from 'xstream'
 import { WebSocket, Server } from 'mock-socket';
 import { WebSocketStream } from './WebSocketStream';
-import { SearchResultItem } from './Model';
+import { SearchResultItem, SearchResultItemCommand } from './Model';
 
 
 it('WebSocket to Stream', (done: any) => {
@@ -15,7 +15,10 @@ it('WebSocket to Stream', (done: any) => {
           console.log('Envio!!!');
           socket.send(
               JSON.stringify(
-                  {id: 'ID' + i , name: 'Name ' + 1}
+                  {
+                    command: 'ADD',
+                    sri: {id: 'ID' + i , name: 'Name ' + 1}
+                  }
               )
           );
           i = i + 1;
@@ -28,9 +31,9 @@ it('WebSocket to Stream', (done: any) => {
 
     const stream = app.openStream();
 
-    var  listener : Listener<SearchResultItem> = 
+    var  listener : Listener<SearchResultItemCommand> = 
     {
-        next: (sr: SearchResultItem) => console.log('next ', sr.id),
+        next: (sr: SearchResultItemCommand) => console.log('next ', sr.id),
         error: (err: any) => console.error(err),
         complete: () => {
             console.log('completed');

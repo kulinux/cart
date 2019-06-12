@@ -1,7 +1,7 @@
 
 import xs, { Producer, Listener } from 'xstream'
 import { Stream } from 'xstream';
-import { SearchResultItem } from './Model';
+import { SearchResultItem, SearchResultItemCommand } from './Model';
 
 
 export class WebSocketStream {
@@ -12,14 +12,19 @@ export class WebSocketStream {
     }
 
     send(msg: object) {
-        this.connection.send(JSON.stringify(msg));
+        if( this.connection.readyState ) {
+            this.connection.send(JSON.stringify(msg));
+        } else {
+            setTimeout(() => this.send(msg), 100);
+        }
     }
 
-    openStream(): Stream<SearchResultItem> {
+    openStream(): Stream<SearchResultItemCommand> {
         let con = this.connection;
-        let producer: Producer<SearchResultItem> = {
-            start: function (listener: Listener<SearchResultItem>) {
+        let producer: Producer<SearchResultItemCommand> = {
+            start: function (listener: Listener<SearchResultItemCommand>) {
                 con.onmessage = (event: MessageEvent) => {
+                    console.log('Message raw', event.data);
                     listener.next(JSON.parse(event.data));
                 };
             },
@@ -33,10 +38,13 @@ export class WebSocketStream {
         
     }
 
-    buildListener(cb: (sr: SearchResultItem) => void): Listener<SearchResultItem> {
-        var  listener : Listener<SearchResultItem> = 
+    buildListener(cb: (sr: SearchResultItemCommand) => void): Listener<SearchResultItemCommand> {
+        var  listener : Listener<SearchResultItemCommand> = 
         {
-            next: (sr: SearchResultItem) => console.log('next ', sr.id),
+            next: (sr: SearchResultItemCommand) => {
+                console.log('next ', sr)
+                cb(sr);
+            },
             error: (err: any) => console.error(err),
             complete: () => {
                 console.log('completed');

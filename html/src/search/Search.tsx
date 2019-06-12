@@ -15,9 +15,10 @@ import IconButton from '@material-ui/core/IconButton';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import {SearchResult} from './Model'
+import {SearchResult, SearchResultItemCommand} from './Model'
 import {SearchResultItem} from './Model'
 import {WebSocketStream} from './WebSocketStream'
+import { Stream } from 'stream';
 
 
 const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={props.id}>
@@ -55,25 +56,42 @@ class Search extends React.Component<{}, SearchResult> {
   constructor(props: any) {
     super(props);
     this.state = jsonInit;
-    this.ws = new WebSocketStream("ws://localhost:8080/cart")
+    this.ws = new WebSocketStream("ws://localhost:9000/ws")
   }
 
   componentDidMount() {
-    this.ws.openStream()
+    let stream = this.ws.openStream()
 
-    this.ws.buildListener((sr: SearchResultItem) => {
+    let listener = this.ws.buildListener((sr: SearchResultItemCommand) => {
       console.log('New Message from server ', sr);
       let nextState: SearchResult = {
-        searchText: this.state.searchText,
-        searchResult: [...this.state.searchResult, sr]
+          searchText: this.state.searchText,
+          searchResult: [...this.state.searchResult]
+      }
+      if( sr.command === "ADD" ) {
+        nextState = {
+          searchText: this.state.searchText,
+          searchResult: [...this.state.searchResult, sr.sri]
+        }
+      }
+      if( sr.command === "CLEAR" ) {
+        nextState = {
+          searchText: this.state.searchText,
+          searchResult: []
+        }
       }
       this.setState(nextState);
     });
+
+    stream.addListener(listener);
 
   }
 
   handleSearch(event: any) {
     console.log('SEARCH!!!' + event.target.value);
+    this.ws.send({
+      text: event.target.value
+    });
     this.setState({searchText: event.target.value})
   }
 
