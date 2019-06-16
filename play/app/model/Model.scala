@@ -9,7 +9,7 @@ case class SearchResultItem (
 
 case class SearchResultItemCommand(
            command: String,
-           sri: SearchResultItem)
+           sri: Option[SearchResultItem])
 
 case class SearchResult (
             searchText: String,
