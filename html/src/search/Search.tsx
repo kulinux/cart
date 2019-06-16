@@ -15,11 +15,8 @@ import IconButton from '@material-ui/core/IconButton';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import {SearchResult, SearchResultItemCommand} from './Model'
+import {SearchResult} from './Model'
 import {SearchResultItem} from './Model'
-import {WebSocketStream} from './WebSocketStream'
-import { Stream } from 'stream';
-
 
 const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={props.id}>
     <ListItemAvatar>
@@ -29,7 +26,7 @@ const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={prop
     </ListItemAvatar>
     <ListItemText
       primary={props.name}
-      secondary={'Secondary text'}
+      secondary={'Secondary text ' + props.id}
     />
     <ListItemSecondaryAction>
       <IconButton edge="end" aria-label="Delete">
@@ -40,59 +37,41 @@ const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={prop
 
 const jsonInit = {
   searchText: '',
-  searchResult: [
-    { id: '1', name: 'Calamares Roamana' },
-    { id: '2', name: 'Micolor' },
-    { id: '3', name: 'Papel Bater' },
-  ]
+  searchResult: []
 };
-
-
 
 class Search extends React.Component<{}, SearchResult> {
 
-  ws: WebSocketStream;
+  url: string = 'http://localhost:9000/prepare/cart/search';
 
   constructor(props: any) {
     super(props);
     this.state = jsonInit;
-    this.ws = new WebSocketStream("ws://localhost:9000/ws")
-  }
-
-  componentDidMount() {
-    let stream = this.ws.openStream()
-
-    let listener = this.ws.buildListener((sr: SearchResultItemCommand) => {
-      console.log('New Message from server ', sr);
-      let nextState: SearchResult = {
-          searchText: this.state.searchText,
-          searchResult: [...this.state.searchResult]
-      }
-      if( sr.command === "ADD" ) {
-        nextState = {
-          searchText: this.state.searchText,
-          searchResult: [...this.state.searchResult, sr.sri]
-        }
-      }
-      if( sr.command === "CLEAR" ) {
-        nextState = {
-          searchText: this.state.searchText,
-          searchResult: []
-        }
-      }
-      this.setState(nextState);
-    });
-
-    stream.addListener(listener);
-
   }
 
   handleSearch(event: any) {
-    console.log('SEARCH!!!' + event.target.value);
-    this.ws.send({
-      text: event.target.value
+    this.setState({
+      searchText: event.target.value,
+      searchResult: this.state.searchResult
     });
-    this.setState({searchText: event.target.value})
+    fetch(this.url, {
+      method: 'POST',
+      referrerPolicy: "unsafe-url",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({q: event.target.value})
+    })
+    .then((response) => { return response.json(); } )
+    .then((response) => {
+      this.setState(
+        {
+          searchText: this.state.searchText,
+          searchResult: response 
+        }
+      )
+    });
   }
 
   render() {
@@ -101,7 +80,6 @@ class Search extends React.Component<{}, SearchResult> {
           <TextField
             id="search-input"
             label="Search"
-            defaultValue=""
             margin="normal"
             fullWidth
             value={this.state.searchText}
@@ -109,7 +87,7 @@ class Search extends React.Component<{}, SearchResult> {
           />
           <List>
             {this.state.searchResult.map((item, i) =>
-              <ListItemView key="{item.id}" {...item}/>
+              <ListItemView key={item.id} {...item}/>
             )}
             </List>
       </Container>
