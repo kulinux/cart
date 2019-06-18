@@ -1,18 +1,30 @@
 package controllers
 
+import db.DBModel
+import db.DBModel.Skus
 import javax.inject._
 import model.{AddItem, ItemCart, PrepareCart, RemoveItem, Search, SearchResultItem}
+import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{JsError, Json, Reads}
 import play.api.mvc._
+import slick.jdbc.HsqldbProfile.api._
+import slick.jdbc.JdbcProfile
+import sun.security.pkcs11.Secmod.DbMode
 
 import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.Future
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
  */
 @Singleton
-class PrepareCartController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class PrepareCartController @Inject()( cc: ControllerComponents,
+                                       dbConfigProvider: DatabaseConfigProvider,
+                                     ) extends AbstractController(cc) {
+  val con = dbConfigProvider.get[JdbcProfile].db
+
+  db.DBModel.buildDatabase(con)
 
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
@@ -29,9 +41,15 @@ class PrepareCartController @Inject()(cc: ControllerComponents) extends Abstract
   implicit val jsonSearch = Json.format[Search]
   implicit val jsonSearchResult = Json.format[SearchResultItem]
 
-  def list = Action {
-    val json = Json.toJson(cart.items)
-    Ok(json)
+  def find(id: String) =
+    con.run(DBModel.skus.filter(_.id === id).result.headOption)
+
+  def list = Action.async {
+     con.run(DBModel.skus.result)
+      .map(
+          _.map(sku => ItemCart(sku.id, sku.name, 0) )
+        )
+      .map( ic => Ok(Json.toJson(ic)) )
   }
 
   def validateJson[A: Reads] = parse.json.validate(
