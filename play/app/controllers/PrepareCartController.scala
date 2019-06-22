@@ -41,15 +41,14 @@ class PrepareCartController @Inject()( cc: ControllerComponents,
   implicit val jsonSearch = Json.format[Search]
   implicit val jsonSearchResult = Json.format[SearchResultItem]
 
-  def find(id: String) =
-    con.run(DBModel.skus.filter(_.id === id).result.headOption)
-
   def list = Action.async {
-     con.run(DBModel.skus.result)
-      .map(
-          _.map(sku => ItemCart(sku.id, sku.name, 0) )
-        )
-      .map( ic => Ok(Json.toJson(ic)) )
+     mapToJson( con.run(DBModel.skus.result) )
+  }
+
+  def mapToJson(res: Future[Iterable[Skus#TableElementType]]) = {
+    res.map(
+      _.map(sku => ItemCart(sku.id, sku.name, 0) )
+    ).map( ic => Ok(Json.toJson(ic)) )
   }
 
   def validateJson[A: Reads] = parse.json.validate(
@@ -69,11 +68,11 @@ class PrepareCartController @Inject()( cc: ControllerComponents,
     Ok(okJson)
   }
 
-  def search = Action(validateJson[Search]) { req =>
-    val request = req.body.q
-    Ok(Json.toJson( Seq(
-      SearchResultItem("1", "name 1"),
-      SearchResultItem("2", "name 2")
-    ) ) )
+  def search = Action.async(validateJson[Search]) { req =>
+    mapToJson(
+      con.run(
+        DBModel.skus.filter(_.name.like(s"%${req.body.q}%")).result
+      )
+    )
   }
 }

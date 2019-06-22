@@ -25,9 +25,13 @@ object DBModel {
   def buildDatabase(db: Database): Unit = {
     db.run(DBIO.seq(
       schema.create,
-      skus ++= Seq(Sku("1", "DB Name 1", "DB Description 1"),
-      Sku("2", "DB Name 2", "DB Description 2"),
-      Sku("3", "DB Name 3", "DB Description 3"))
+      skus ++= Seq(
+        Sku("1", "DB Name 1", "DB Description 1"),
+        Sku("2", "DB Name 2", "DB Description 2"),
+        Sku("3", "uno", "DB Description 3"),
+        Sku("4", "dos", "DB Description 3"),
+        Sku("4", "tres", "DB Description 3")
+      )
     ))
   }
 }
