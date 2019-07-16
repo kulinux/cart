@@ -14,6 +14,7 @@ class ImporterSpec extends FlatSpec with Matchers {
     val filePath = "/Users/pako/project/cart/import/src/test/resources/1_line.csv"
     val file = FileIO.fromPath(Paths.get(filePath))
     val importer = new Importer(file)
+    importer.create()
     importer.run()
   }
 

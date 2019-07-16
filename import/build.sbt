@@ -1,4 +1,4 @@
-name := "akka-quickstart-scala"
+name := "import"
 
 version := "1.0"
 
@@ -10,6 +10,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "com.lightbend.akka" %% "akka-stream-alpakka-csv" % "0.18",
+  "com.lightbend.akka" %% "akka-stream-alpakka-cassandra" % "1.1.0",
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
