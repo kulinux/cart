@@ -86,12 +86,13 @@ class Importer(file: Source[ByteString, Future[IOResult]])
   val Country = "france"
 
   val parseCsv :Flow[ByteString, Map[String, String], _]  = Flow[ByteString]
-    .via(CsvParsing.lineScanner(delimiter = '\t'))
+    .map( str => str.filterNot(_ == '\\' ).filterNot( _ == '"' ) )
+    .via(CsvParsing.lineScanner(delimiter = '\t', maximumLineLength = 1000000))
     .via(CsvToMap.withHeadersAsStrings(StandardCharsets.UTF_8, Headers.Headers:_*))
     .filter( _(Headers.countries).contains(Country) )
 
 
-  def run()(implicit system: ActorSystem) : Unit = {
+  def run()(implicit system: ActorSystem): Unit = {
 
     create()
 
@@ -105,18 +106,15 @@ class Importer(file: Source[ByteString, Future[IOResult]])
 
     val res = file
       .via(parseCsv)
-      .log("Error parsing CSV")
+      .log("Error CSV Parse")
       .to(cassandraSink(Headers.Headers))
       .run()
 
 
 
-    val res2 = Await.ready(res, 30 seconds)
+    val res2 = Await.ready(res, 3000 seconds)
 
     println(s"Res2 $res2")
-
-
-    //.runForeach(x => println(x(Headers.code) + " " + x(Headers.countries)))
 
   }
 
