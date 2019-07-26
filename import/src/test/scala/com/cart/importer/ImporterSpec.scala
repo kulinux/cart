@@ -37,6 +37,6 @@ class ImporterElastic (file: Source[ByteString, Future[IOResult]])
   extends ImporterFile(file)
   with StoreElasticSink {
 
-  val sink = ???
+  val sink = elasticSink
 
 }
