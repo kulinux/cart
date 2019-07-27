@@ -38,7 +38,7 @@ abstract class ImporterFile(file: Source[ByteString, Future[IOResult]]) {
     .via(CsvToMap.withHeadersAsStrings(StandardCharsets.UTF_8, Headers.Headers:_*))
     .filter( _(Headers.countries).contains(Country) )
 
-  val sink: Sink[Map[String, String], _]
+  val sink: Sink[Map[String, String], Future[_]]
 
   def run()(implicit system: ActorSystem): Unit = {
 
@@ -51,10 +51,15 @@ abstract class ImporterFile(file: Source[ByteString, Future[IOResult]]) {
     implicit val materializer = ActorMaterializer(materializerSettings)(system)
     implicit val dispatcher = system.dispatcher
 
-    val res : Future[IOResult]= file
+    val res : Future[_]= file
       .via(parseCsv)
       .log("Error CSV Parse")
-      .to(sink)
+      .toMat(sink)({
+        (a, b) => {
+          for{ i <- a
+            j <- b } yield (i, j)
+        }
+      })
       .run()
 
     val res2 = Await.ready(res, 3000 seconds)

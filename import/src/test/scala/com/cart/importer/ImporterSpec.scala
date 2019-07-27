@@ -25,11 +25,12 @@ class ImporterSpec extends FlatSpec with Matchers {
 
 
   "A File" should "be importer in elastic search" in {
-    val filePath = "/Users/pako/project/cart/import/src/test/resources/1_line.csv"
+    //val filePath = "/Users/pako/project/cart/import/src/test/resources/1_line.csv"
+    val filePath = "/Users/pako/project/cart/db/en.openfoodfacts.org.products.csv"
     val file = FileIO.fromPath(Paths.get(filePath))
     val importer = new ImporterElastic(file)
     importer.run()
-    Thread.sleep(10000)
+    //Thread.sleep(10000)
   }
 }
 
