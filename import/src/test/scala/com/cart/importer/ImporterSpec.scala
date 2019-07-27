@@ -18,7 +18,7 @@ class ImporterSpec extends FlatSpec with Matchers {
     //val filePath = "/Users/pako/project/cart/db/en.openfoodfacts.org.products.csv"
     val filePath = "/Users/pako/project/cart/import/src/test/resources/1_line.csv"
     val file = FileIO.fromPath(Paths.get(filePath))
-    val importer = new Importer(file)
+    val importer = new ImporterCassandra(file)
     importer.create()
     importer.run()
   }
@@ -27,16 +27,9 @@ class ImporterSpec extends FlatSpec with Matchers {
   "A File" should "be importer in elastic search" in {
     val filePath = "/Users/pako/project/cart/import/src/test/resources/1_line.csv"
     val file = FileIO.fromPath(Paths.get(filePath))
-    val importer = new Importer(file)
-    importer.create()
+    val importer = new ImporterElastic(file)
     importer.run()
+    Thread.sleep(10000)
   }
 }
 
-class ImporterElastic (file: Source[ByteString, Future[IOResult]])
-  extends ImporterFile(file)
-  with StoreElasticSink {
-
-  val sink = elasticSink
-
-}

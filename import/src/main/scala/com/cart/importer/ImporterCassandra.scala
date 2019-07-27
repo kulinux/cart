@@ -3,7 +3,6 @@ package com.cart.importer
 
 import java.nio.charset.StandardCharsets
 
-import akka.Done
 import akka.actor.ActorSystem
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
 import akka.stream.scaladsl.{Flow, Sink, Source}
@@ -13,15 +12,21 @@ import akka.util.ByteString
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class Importer(file: Source[ByteString, Future[IOResult]])
+class ImporterCassandra(file: Source[ByteString, Future[IOResult]])
   extends ImporterFile(file)
   with StoreCassandraSink {
 
   create()
-
   val sink = cassandraSink(Headers.Headers)
-
 }
+
+class ImporterElastic(file: Source[ByteString, Future[IOResult]])
+  extends ImporterFile(file)
+    with StoreElasticSink  {
+
+  val sink = elasticSink
+}
+
 
 abstract class ImporterFile(file: Source[ByteString, Future[IOResult]]) {
 
