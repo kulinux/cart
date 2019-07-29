@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets
 
 import akka.actor.ActorSystem
 import akka.stream.alpakka.csv.scaladsl.{CsvParsing, CsvToMap}
-import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import akka.stream.{ActorMaterializer, ActorMaterializerSettings, IOResult, Supervision}
 import akka.util.ByteString
 
@@ -51,20 +51,16 @@ abstract class ImporterFile(file: Source[ByteString, Future[IOResult]]) {
     implicit val materializer = ActorMaterializer(materializerSettings)(system)
     implicit val dispatcher = system.dispatcher
 
-    val res : Future[_]= file
+    val res : (Future[IOResult], Future[_])= file
       .via(parseCsv)
       .log("Error CSV Parse")
-      .toMat(sink)({
-        (a, b) => {
-          for{ i <- a
-            j <- b } yield (i, j)
-        }
-      })
+      .toMat(sink)(Keep.both)
       .run()
 
-    val res2 = Await.ready(res, 3000 seconds)
+    val res1 = Await.ready(res._1, 3000 seconds)
+    val res2 = Await.ready(res._2, 3000 seconds)
 
-    println(s"Res2 $res2")
+    println(s"Res2 $res1, $res2")
 
   }
 

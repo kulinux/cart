@@ -15,8 +15,8 @@ class ImporterSpec extends FlatSpec with Matchers {
   implicit val system = ActorSystem()
 
   "A File" should "be importer in cassandra" in {
-    //val filePath = "/Users/pako/project/cart/db/en.openfoodfacts.org.products.csv"
-    val filePath = "/Users/pako/project/cart/import/src/test/resources/1_line.csv"
+    val filePath = "/Users/pako/project/cart/db/en.openfoodfacts.org.products.csv"
+    //val filePath = "/Users/pako/project/cart/import/src/test/resources/1_line.csv"
     val file = FileIO.fromPath(Paths.get(filePath))
     val importer = new ImporterCassandra(file)
     importer.create()

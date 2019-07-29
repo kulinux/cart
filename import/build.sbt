@@ -1,4 +1,4 @@
-name := "import"
+name := "cart-import"
 
 version := "1.0"
 
