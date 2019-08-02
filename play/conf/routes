@@ -13,3 +13,5 @@ GET     /ws                         controllers.WebSocketController.socket
 
 GET     /prepare/cart/list          controllers.PrepareCartController.list
 POST     /prepare/cart/search       controllers.PrepareCartController.search
+
+POST     /sku/search                controllers.SkuController.search
