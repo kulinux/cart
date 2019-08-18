@@ -14,11 +14,12 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
 
 import {SearchResult} from './SearchModel'
 import {SearchResultItem} from './SearchModel'
 
-const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={props.id}>
+const ListItemView: React.SFC<any> = (props) => <ListItem key={props.id}>
     <ListItemAvatar>
       <Avatar>
         <FolderIcon />
@@ -29,6 +30,9 @@ const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={prop
       secondary={'Secondary text ' + props.id}
     />
     <ListItemSecondaryAction>
+      <IconButton edge="end" aria-label="Add" onClick={() => props.add(props.id)}>
+        <AddIcon />
+      </IconButton>
       <IconButton edge="end" aria-label="Delete">
         <DeleteIcon />
       </IconButton>
@@ -43,11 +47,29 @@ const jsonInit = {
 
 class Search extends React.Component<{}, SearchResult> {
 
-  url: string = 'http://localhost:9000/sku/search';
+  urlSearch: string = 'http://localhost:9000/sku/search';
+  urlAdd: string = 'http://localhost:9000/prepare/cart/add'
 
   constructor(props: any) {
     super(props);
     this.state = jsonInit;
+  }
+
+  add(id: string) {
+    console.log('Add ', id);
+    fetch(this.urlAdd, {
+      method: 'PUT',
+      referrerPolicy: "unsafe-url",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({id: id, quantity: 0})
+    })
+    .then((response) => { return response.json(); } )
+    .then((response) => {
+      console.log('Add rsp ', response);
+    });
   }
 
   handleSearch(event: any) {
@@ -55,7 +77,7 @@ class Search extends React.Component<{}, SearchResult> {
       searchText: event.target.value,
       searchResult: []
     });
-    fetch(this.url, {
+    fetch(this.urlSearch, {
       method: 'POST',
       referrerPolicy: "unsafe-url",
       headers: {
@@ -91,7 +113,7 @@ class Search extends React.Component<{}, SearchResult> {
           <p>Total Found {this.state.total}</p>
           <List>
             {this.state.searchResult.map((item, i) =>
-              <ListItemView key={item.id} {...item}/>
+              <ListItemView key={item.id} add={(id: string) => this.add(id)} {...item}/>
             )}
             </List>
       </Container>

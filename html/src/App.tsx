@@ -7,7 +7,7 @@ import SkuViewer from './sku/SkuViewer';
 function App() {
   return (
     <div className="App">
-        <SkuViewer/>
+        <Search/>
     </div>
   );
 }
