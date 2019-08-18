@@ -17,7 +17,7 @@ class ElasticSearchService {
 
   def query(q: String): Future[Response[SearchResponse]] = {
     client.execute {
-      search("skus" ).query("a")
+      search("skus" ).query(q)
     }
   }
 }

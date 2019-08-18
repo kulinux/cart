@@ -30,7 +30,7 @@ class ImporterElastic(file: Source[ByteString, Future[IOResult]])
 
 abstract class ImporterFile(file: Source[ByteString, Future[IOResult]]) {
 
-  val Country = "france"
+  val Country = "Spain"
 
   val parseCsv :Flow[ByteString, Map[String, String], _]  = Flow[ByteString]
     .map( str => str.filterNot(_ == '\\' ).filterNot( _ == '"' ) )

@@ -7,18 +7,15 @@ export interface SearchResultItem {
 
 export interface SearchResult {
     searchText: string;
+    total: number,
     searchResult: Array<SearchResultItem>;
 }
 
-export interface InputSearch{
-    text: string
+export interface InputSearch {
+    q: string
 }
 
 export interface SearchResultItemCommand {
     command: string;
     sri: SearchResultItem;
 }
-
-
-
-//export default SearchResult;

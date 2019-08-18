@@ -47,10 +47,13 @@ class SkuController @Inject()(cc: ControllerComponents,
 
 
   def search = Action.async(validateJson[Search]) { req =>
-    elastic.query(req.body.q)
+    elastic.query(s"*${req.body.q}*")
         .map( er => er match  {
-            case res: RequestSuccess[SearchResponse] => SkuResult(mapHits(res))
-            case _ => SkuModel.SkuResult(List())
+            case res: RequestSuccess[SearchResponse] => SkuResult(res.result.hits.total, mapHits(res))
+            case other => {
+              println(s"No sucess $other")
+              SkuModel.SkuResult(0, List())
+            }
         })
         .map(js => Ok(Json.toJson(js)))
 

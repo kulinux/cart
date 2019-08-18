@@ -1,0 +1,39 @@
+
+
+
+.sku-container {
+    display: flex;
+}
+
+.sku-main {
+    flex: 2;
+}
+
+.sku-aside {
+    flex: 1;
+}
+
+.sku-main > header {
+    font-size: 2em;
+    text-transform: uppercase;
+}
+
+.sku-attrs {
+    list-style-type: none;
+    padding-left: .2em;
+}
+
+.sku-attr {
+    margin-top: 0;
+    display: flex;
+}
+
+.sku-attr-label {
+    flex: 1;
+} 
+
+.sku-attr-value {
+    flex: 2;
+    padding-left: .4em;
+    margin-top: 0;
+} 

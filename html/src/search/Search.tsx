@@ -15,8 +15,8 @@ import IconButton from '@material-ui/core/IconButton';
 import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import {SearchResult} from './Model'
-import {SearchResultItem} from './Model'
+import {SearchResult} from './SearchModel'
+import {SearchResultItem} from './SearchModel'
 
 const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={props.id}>
     <ListItemAvatar>
@@ -37,12 +37,13 @@ const ListItemView: React.SFC<SearchResultItem> = (props) => <ListItem key={prop
 
 const jsonInit = {
   searchText: '',
+  total: 0,
   searchResult: []
 };
 
 class Search extends React.Component<{}, SearchResult> {
 
-  url: string = 'http://localhost:9000/prepare/cart/search';
+  url: string = 'http://localhost:9000/sku/search';
 
   constructor(props: any) {
     super(props);
@@ -52,7 +53,7 @@ class Search extends React.Component<{}, SearchResult> {
   handleSearch(event: any) {
     this.setState({
       searchText: event.target.value,
-      searchResult: this.state.searchResult
+      searchResult: []
     });
     fetch(this.url, {
       method: 'POST',
@@ -65,10 +66,12 @@ class Search extends React.Component<{}, SearchResult> {
     })
     .then((response) => { return response.json(); } )
     .then((response) => {
+      console.log('response', response);
       this.setState(
         {
           searchText: this.state.searchText,
-          searchResult: response 
+          searchResult: response.items,
+          total: response.total
         }
       )
     });
@@ -85,6 +88,7 @@ class Search extends React.Component<{}, SearchResult> {
             value={this.state.searchText}
             onChange={this.handleSearch.bind(this)}
           />
+          <p>Total Found {this.state.total}</p>
           <List>
             {this.state.searchResult.map((item, i) =>
               <ListItemView key={item.id} {...item}/>
