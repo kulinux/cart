@@ -67,6 +67,8 @@ class SkuViewer extends React.Component<{}, Sku> {
         <article className="sku-main">
           <header>
             {this.state.name}
+            <img src={this.state.attr.get("image_url")}/>
+            <img src={this.state.attr.get("image_ingredients_url")}/>
           </header>
           <main>
             <p>Ingredientes</p>
