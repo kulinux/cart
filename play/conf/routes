@@ -16,3 +16,4 @@ POST     /prepare/cart/search       controllers.PrepareCartController.search
 PUT     /prepare/cart/add           controllers.PrepareCartController.add
 
 POST     /sku/search                controllers.SkuController.search
+GET     /sku/:id               controllers.SkuController.get(id: String)

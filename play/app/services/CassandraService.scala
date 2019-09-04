@@ -8,6 +8,7 @@ import services.CassandraService.CassandraSku
 
 import scala.concurrent.{Await, ExecutionContext, Future, Promise}
 import com.google.common.util.concurrent.{FutureCallback, Futures, ListenableFuture}
+import javax.inject.Inject
 
 import scala.language.implicitConversions
 import play.api.libs.json._
@@ -15,8 +16,9 @@ import play.api.libs.json._
 import scala.concurrent.duration._
 
 
-//@Singleton
-class CassandraService(implicit executionContext: ExecutionContext) {
+@javax.inject.Singleton
+class CassandraService @Inject()(implicit executionContext: ExecutionContext) {
+
 
   implicit val session = new Cluster
   .Builder()
@@ -87,6 +89,7 @@ object FastTestCassandra extends App {
   val fut = cassandraService.getById("8410095506431")
     .map(println)
 
-  Await.result(fut, 10 seconds)
+  val res = Await.result(fut, 10 seconds)
+  println(res)
 
 }

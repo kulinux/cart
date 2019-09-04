@@ -4,13 +4,11 @@ import './SkuViewer.css';
 import {Sku} from './SkuModel'
 
 const jsonInit = {
-  id: 'XXXXXXXX',
-  name: 'Nocilla',
+  id: '',
+  name: '',
   attr: new Map<string, string>(
     [
-      ['aceites', 'naturales'],
-      ['cereales', 'avellanas, almendras'],
-      ['vitaminas', 'C,D,E']
+      ['', '']
     ]
   )
 };
@@ -18,9 +16,39 @@ const jsonInit = {
 
 class SkuViewer extends React.Component<{}, Sku> {
 
+  urlSku: string = 'http://localhost:9000/sku/';
+
+
   constructor(props: any) {
     super(props);
-    this.state = jsonInit;
+    this.state = {...jsonInit, id: props.match.params.id};
+  }
+
+
+  componentDidMount() {
+    fetch(this.urlSku + this.state.id, {
+      method: 'GET',
+      referrerPolicy: "unsafe-url",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    })
+    .then((response) => { return response.json(); } )
+    .then((response) => {
+      let map = new Map<string, string>();
+      for( let key in response.attr ) {
+        map.set(key, response.attr[key]);
+      }
+
+      this.setState({
+        id: response.attr['code'],
+        name: response.attr['product_name'],
+        attr: map
+      });
+      console.log('Json ', response);
+    });
+
   }
 
   renderAttr(attr: Map<string, string>) {

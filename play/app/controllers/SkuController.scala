@@ -7,7 +7,8 @@ import model.SkuModel
 import model.SkuModel._
 import play.api.libs.json.{JsError, Json, Reads}
 import play.api.mvc._
-import services.ElasticSearchService
+import services.CassandraService.CassandraSku
+import services.{CassandraService, ElasticSearchService}
 
 import scala.concurrent.ExecutionContext.Implicits._
 
@@ -17,14 +18,15 @@ import scala.concurrent.ExecutionContext.Implicits._
  */
 @Singleton
 class SkuController @Inject()(cc: ControllerComponents,
-                              elastic: ElasticSearchService
-                                     ) extends AbstractController(cc) {
+                              elastic: ElasticSearchService,
+                              cassandra: CassandraService) extends AbstractController(cc) {
   val okJson = Json.obj("status" -> "ok")
 
 
   implicit val jsonSearch = Json.format[Search]
   implicit val jsonResultItem = Json.format[SkuResultItem]
-  implicit val jsonResult= Json.format[SkuResult]
+  implicit val jsonResult = Json.format[SkuResult]
+  implicit val jsonCassandraSku = Json.format[CassandraSku]
 
 
   def validateJson[A: Reads] = parse.json.validate(
@@ -56,6 +58,13 @@ class SkuController @Inject()(cc: ControllerComponents,
             }
         })
         .map(js => Ok(Json.toJson(js)))
+
+  }
+
+
+  def get(id: String) = Action.async {
+      cassandra.getById(id)
+      .map(js => Ok(Json.toJson(js)))
 
   }
 }

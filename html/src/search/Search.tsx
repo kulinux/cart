@@ -1,43 +1,20 @@
 
 import * as React from 'react';
 
-import TextField from '@material-ui/core/TextField';
 
-import Container from '@material-ui/core/Container';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import FolderIcon from '@material-ui/icons/Folder';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
 
 import {SearchResult} from './SearchModel'
 import {SearchResultItem} from './SearchModel'
 
-const ListItemView: React.SFC<any> = (props) => <ListItem key={props.id}>
-    <ListItemAvatar>
-      <Avatar>
-        <FolderIcon />
-      </Avatar>
-    </ListItemAvatar>
-    <ListItemText
-      primary={props.name}
-      secondary={'Secondary text ' + props.id}
-    />
-    <ListItemSecondaryAction>
-      <IconButton edge="end" aria-label="Add" onClick={() => props.add(props.id)}>
-        <AddIcon />
-      </IconButton>
-      <IconButton edge="end" aria-label="Delete">
-        <DeleteIcon />
-      </IconButton>
-    </ListItemSecondaryAction>
-  </ListItem>;
+const ListItemView: React.SFC<any> = (props) =>
+    <li key={props.id}>
+      <a href={"/sku/" + props.id}>
+        {props.name}
+      </a>
+      <button onClick={() => props.add(props.id)}>Add</button>
+    </li>
+
+  ;
 
 const jsonInit = {
   searchText: '',
@@ -101,22 +78,19 @@ class Search extends React.Component<{}, SearchResult> {
 
   render() {
     return (
-      <Container id="search">
-          <TextField
+      <main id="search">
+          <input
             id="search-input"
-            label="Search"
-            margin="normal"
-            fullWidth
             value={this.state.searchText}
             onChange={this.handleSearch.bind(this)}
           />
           <p>Total Found {this.state.total}</p>
-          <List>
+          <ul>
             {this.state.searchResult.map((item, i) =>
               <ListItemView key={item.id} add={(id: string) => this.add(id)} {...item}/>
             )}
-            </List>
-      </Container>
+          </ul>
+      </main>
     );
   }
 }
