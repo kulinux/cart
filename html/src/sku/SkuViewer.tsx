@@ -18,12 +18,10 @@ class SkuViewer extends React.Component<{}, Sku> {
 
   urlSku: string = 'http://localhost:9000/sku/';
 
-
   constructor(props: any) {
     super(props);
     this.state = {...jsonInit, id: props.match.params.id};
   }
-
 
   componentDidMount() {
     fetch(this.urlSku + this.state.id, {

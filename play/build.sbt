@@ -15,6 +15,9 @@ libraryDependencies += "com.h2database" % "h2" % "1.4.192"
 libraryDependencies += "com.datastax.cassandra" % "cassandra-driver-core" % "3.7.1"
 
 
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.0.0-RC1"
+
+
 
 val elastic4sVersion = "6.3.3"
 libraryDependencies ++= Seq(
